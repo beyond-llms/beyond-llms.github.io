@@ -826,7 +826,40 @@ a { color: var(--link-color); }
 .copy-citation-btn i { font-size: 0.82rem; }
 
 /* =============================================
-   10. FOOTER
+   10. IMAGE LIGHTBOX
+   ============================================= */
+.lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(0, 0, 0, 0.85);
+    cursor: zoom-out;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.lightbox.open {
+    display: flex;
+}
+
+.lightbox img {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 4px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+}
+
+.section-figure img,
+.section-figure-col img,
+.section-figure--tall img {
+    cursor: zoom-in;
+}
+
+/* =============================================
+   11. FOOTER
    ============================================= */
 .site-footer {
     margin-top: 80px;

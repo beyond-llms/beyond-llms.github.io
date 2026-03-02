@@ -458,6 +458,11 @@
         </div><!-- end sidebar-content-area -->
     </main>
 
+    <!-- Image Lightbox -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <img id="lightbox-img" src="" alt="">
+    </div>
+
     <!-- Footer -->
     <footer class="site-footer">
         <div class="container">
@@ -540,6 +545,25 @@
             });
         }
     })();
+
+    // Lightbox for figures
+    document.querySelectorAll('.section-figure img, .section-figure-col img, .section-figure--tall img').forEach(img => {
+        img.addEventListener('click', function() {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            lightboxImg.src = this.src;
+            lightboxImg.alt = this.alt;
+            lightbox.classList.add('open');
+        });
+    });
+
+    function closeLightbox() {
+        document.getElementById('lightbox').classList.remove('open');
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeLightbox();
+    });
 
     function copyCitation(btn) {
         const pre = btn.closest('.citation-block').querySelector('code');
