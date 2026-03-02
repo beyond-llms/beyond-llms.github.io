@@ -6,7 +6,8 @@
     <meta property="og:title" content="Beyond Language Modeling: An Exploration of Multimodal Pretraining" />
     <meta property="og:description" content="Empirical insights on representation, data, architecture, and scaling for native multimodal pretraining." />
     <meta property="og:image" content="https://beyond-llms.github.io/assets/figures/progression.png" />
-    <title>Beyond Language Pretraining</title>
+    <meta name="description" content="Empirical insights on representation, data, architecture, and scaling for native multimodal pretraining.">
+    <title>Beyond Language Modeling: An Exploration of Multimodal Pretraining</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -15,28 +16,54 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Consolidated CSS -->
     <link href="styles.css" rel="stylesheet">
+    <script>
+    (function() {
+        const storedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const initialTheme = storedTheme || (prefersDark ? 'dark' : 'light');
+        if (initialTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    })();
+    </script>
 </head>
 <body>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Switch to dark mode" title="Toggle dark mode">
+        <svg class="theme-toggle__icon theme-toggle__icon--sun" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg class="theme-toggle__icon theme-toggle__icon--moon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
     <!-- Header Section -->
     <header class="header-section" id="overview">
         <div class="container">
             <div class="row">
                 <div class="col-lg-11 mx-auto text-center">
-                    <h1 class="paper-title">Beyond Language Modeling: An Exploration of Multimodal Pretraining</h1>
-                    
+                    <h1 class="paper-title">Beyond Language Modeling</h1>
+                    <p class="paper-subtitle">An Exploration of Multimodal Pretraining</p>
                     <div class="author-line">
                         <span><a href="https://tsb0601.github.io/" class="author-link">Shengbang Tong<sup>1,2,<span class="author-mark">*</span></sup></a></span>
                         <span><a href="http://davidfan.io/" class="author-link">David Fan<sup>1,<span class="author-mark">*</span></sup></a></span>
                         <span><a href="https://johnlnguyen.com/" class="author-link">John Nguyen<sup>1,<span class="author-mark">*</span></sup></a></span>
                     </div>
-                    <div class="author-line">
+                    <div class="author-line author-line--middle">
                         <span><a href="https://ellisbrown.github.io/" class="author-link">Ellis Brown<sup>1,2</sup></a></span>
                         <span><a href="https://gaoyuezhou.github.io/" class="author-link">Gaoyue Zhou<sup>1,2</sup></a></span>
                         <span><a href="https://jasonqsy.github.io/" class="author-link">Shengyi Qian<sup>1</sup></a></span>
                         <span><a href="https://bytetriper.github.io/" class="author-link">Boyang Zheng<sup>2</sup></a></span>
                         <span><a href="https://webalorn.com/" class="author-link">Théophane Vallaeys<sup>1</sup></a></span>
                         <span><a href="https://junlinhan.github.io/" class="author-link">Junlin Han<sup>1</sup></a></span>
-                        <span><a href="https://cs.nyu.edu/~fergus/" class="author-link">Rob Fergus<sup>1</sup></a></span>
+                        <span><a href="https://cs.nyu.edu/~fergus/" class="author-link">Rob Fergus<sup>1,2</sup></a></span>
                         <span><a href="https://scholar.google.com/citations?user=MBU5wKEAAAAJ&hl=en" class="author-link">Naila Murray<sup>1</sup></a></span>
                         <span><a href="https://scholar.google.com/citations?user=0VG3sQIAAAAJ&hl=en" class="author-link">Marjan Ghazvininejad<sup>1</sup></a></span>
                         <span><a href="https://scholar.google.com/citations?user=SnQnQicAAAAJ&hl=en" class="author-link">Mike Lewis<sup>1</sup></a></span>
@@ -145,8 +172,8 @@
                             We study three families of encoders — VAEs (SD-VAE, FLUX.1), semantic encoders (SigLIP 2, DINOv2, WebSSL), and raw pixels — in a controlled setting at 520B text + 520B multimodal tokens. All encoders achieve comparable text perplexity, confirming that the choice of visual representation has minimal impact on language capabilities. For vision, semantic encoders consistently outperform VAEs on both understanding <em>and</em> generation: SigLIP 2 achieves the highest DPGBench, GenEval, and VQA scores simultaneously, followed by WebSSL-L.
                         </p>
 
-                        <div class="section-figure">
-                            <img src="assets/figures/encoder_comparison.png" alt="Encoder comparison across text perplexity, image generation, and VQA">
+                        <div class="section-figure section-figure--wide section-figure--framed">
+                            <img src="assets/figures/encoder_comparison.png" alt="Encoder comparison across text perplexity, image generation, and VQA" loading="lazy">
                         </div>
                         <p class="section-caption">
                             <strong>RAE outperform VAEs for both generation and understanding.</strong> RAE (SigLIP 2) achieves the highest scores on DPGBench, GenEval, and VQA while maintaining text perplexity comparable to the text-only baseline.
@@ -173,8 +200,8 @@
                             A central concern in unified pretraining is whether adding visual data inevitably degrades language performance — the so-called "modality tax." We study this by training on combinations of text, raw video, image-text pairs (MetaCLIP), and action-conditioned video, all at 520B text + 520B multimodal tokens with a text-only baseline at 520B tokens. We find that Text + Video matches and sometimes even improves upon the text-only baseline in perplexity, suggesting that raw visual data is compatible with language modeling. The observed degradation from image-text data stems not from vision itself, but from distributional shifts in the text captions. However, adding multimodal data in general has a slight impact on out-of-distribution text performance, as shown by the perplexity on the Notes dataset.
                         </p>
 
-                        <div class="section-figure">
-                            <img src="assets/figures/data_composition.png" alt="Impact of pretraining data composition on text perplexity">
+                        <div class="section-figure section-figure--framed">
+                            <img src="assets/figures/data_composition.png" alt="Impact of pretraining data composition on text perplexity" loading="lazy">
                         </div>
                         <p class="section-caption">
                             <strong>Visual data does not compete with text.</strong> Text + Video matches the text-only perplexity baseline. The perceived "modality tax" stems from text distribution shifts in image captions, not from the visual signal itself.
@@ -184,12 +211,12 @@
                             When we measure cross-modal synergy systematically, multimodal co-training consistently exceeds unimodal performance for visual generation. This effect also extends to understanding: supplementing 20B VQA tokens with general-purpose data (text, video, or image-text) yields higher accuracy than scaling task-specific VQA data to 100B alone.
                         </p>
 
-                        <div class="section-figure-row">
+                        <div class="section-figure-row section-figure--wide section-figure--framed">
                             <div class="section-figure-col">
-                                <img src="assets/figures/data_composition_vision_1x2.png" alt="Cross-modal synergy in visual generation">
+                                <img src="assets/figures/data_composition_vision_1x2.png" alt="Cross-modal synergy in visual generation" loading="lazy">
                             </div>
                             <div class="section-figure-col">
-                                <img src="assets/figures/data_vqa.png" alt="General pretraining outperforms specialized VQA scaling">
+                                <img src="assets/figures/data_vqa.png" alt="General pretraining outperforms specialized VQA scaling" loading="lazy">
                             </div>
                         </div>
                         <p class="section-caption">
@@ -222,8 +249,8 @@
                             We find that world modeling capabilities emerge primarily from general multimodal pretraining rather than domain-specific data. Adding unsupervised video data yields the largest gain — outperforming scaling in-domain NWM data alone. More strikingly, when we vary the ratio of domain-specific data while keeping total training data fixed, performance saturates at just 1% in-domain data. This suggests that the core capability is acquired from general pretraining, and in-domain data just helps the model to learn the specific task format. This also implies that to build better world models, we do not necessarily have to collect large-scale action-conditioned data — we can also leverage the abundance of general data available.
                         </p>
 
-                        <div class="section-figure">
-                            <img src="assets/figures/vwm_dataratio.png" alt="World modeling transfers with minimal alignment — performance saturates at 1% domain data">
+                        <div class="section-figure section-figure--framed">
+                            <img src="assets/figures/vwm_dataratio.png" alt="World modeling transfers with minimal alignment — performance saturates at 1% domain data" loading="lazy">
                         </div>
                         <p class="section-caption">
                             <strong>World modeling transfers with minimal alignment.</strong> Performance saturates at just 1% in-domain data, suggesting that the core capability is acquired from general multimodal pretraining.
@@ -231,14 +258,14 @@
                         
                         <p class="body-text">We show some qualitative samples of navigation with free-form language and WASD-style navigation actions. Native multimodal pretraining enables the model to generalize out-of-distribution, and allows the use of a nearly unlimited set of actions, via natural language, unlike recent works such as Genie 3 which can only utilize a limited set of pretrained actions. Note that we do not make any architectural changes to enable world modeling — we simply pass in actions as text tokens. See the paper for more qualitative examples.</p>
                         <div class="section-figure section-figure--tall">
-                            <img src="assets/figures/nwm_example_1.png" alt="Controllable future prediction with free-form language and WASD navigation actions">
+                            <img src="assets/figures/nwm_example_1.jpg" alt="Controllable future prediction with free-form language and WASD navigation actions" loading="lazy">
                         </div>
                         <p class="section-caption">
                             <strong>The model learns controllable future prediction.</strong> Given four context frames (ctx0–ctx3), the model predicts future frames conditioned on both free-form natural language and WASD-style navigation actions.
                         </p>
                         
-                        <div class="section-figure section-figure--tall" style="max-width: 860px; margin-left: auto; margin-right: auto;">
-                            <img src="assets/figures/stochasticity.png" alt="Counterfactual">
+                        <div class="section-figure section-figure--tall section-figure--wide">
+                            <img src="assets/figures/stochasticity.jpg" alt="Counterfactual" loading="lazy">
                         </div>
                         <p class="section-caption">
                             <strong>Simulating counterfactuals.</strong> Given four context frames, the model predicts four counterfactual action trajectories using a mixture of free-form natural language and WASD-style navigation actions.
@@ -277,8 +304,8 @@
                                     The Transfusion baseline shares all FFN parameters across text and vision. A simple first improvement is to give each modality its own FFN — "modality-specific FFNs." We find that modality-specific FFNs improve performance across the board.
                                 </p>
 
-                                <div class="section-figure">
-                                    <img src="assets/figures/progression_ffn.png" alt="FFN Variants: Shared vs Modality-Specific">
+                                <div class="section-figure section-figure--framed">
+                                    <img src="assets/figures/progression_ffn.png" alt="FFN Variants: Shared vs Modality-Specific" loading="lazy">
                                 </div>
                             </div>
                         </details>
@@ -295,8 +322,8 @@
                                     With modality-specific FFNs, we compare vision encoders: SD-VAE, Flux.1, a dual-encoder (SigLIP + SD-VAE), and a single RAE (SigLIP 2). SigLIP 2 achieves the best overall text perplexity and image generation performance.
                                 </p>
 
-                                <div class="section-figure">
-                                    <img src="assets/figures/progression_encoder.png" alt="Vision Encoder comparison: VAE vs RAE vs dual-encoder">
+                                <div class="section-figure section-figure--framed">
+                                    <img src="assets/figures/progression_encoder.png" alt="Vision Encoder comparison: VAE vs RAE vs dual-encoder" loading="lazy">
                                 </div>
                             </div>
                         </details>
@@ -313,8 +340,8 @@
                                     With SigLIP 2 as the encoder, we explore how to allocate parameters across modalities. MoE clearly outperforms all other methods for parameter separation.
                                 </p>
 
-                                <div class="section-figure">
-                                    <img src="assets/figures/progression_separation.png" alt="Parameter separation: Dense vs MoT vs MoE">
+                                <div class="section-figure section-figure--framed">
+                                    <img src="assets/figures/progression_separation.png" alt="Parameter separation: Dense vs MoT vs MoE" loading="lazy">
                                 </div>
                             </div>
                         </details>
@@ -331,8 +358,8 @@
                                     Finally, we compare diffusion prediction targets. x-prediction achieves a good trade-off between competitive text perplexity and better image generation.
                                 </p>
 
-                                <div class="section-figure">
-                                    <img src="assets/figures/progression_pred.png" alt="Prediction target: v-prediction vs x-prediction">
+                                <div class="section-figure section-figure--framed">
+                                    <img src="assets/figures/progression_pred.png" alt="Prediction target: v-prediction vs x-prediction" loading="lazy">
                                 </div>
                             </div>
                         </details>
@@ -344,8 +371,8 @@
                             Modality-specific FFNs improve multimodal pretraining by giving each modality its own parameters. We take this principle further with Mixture-of-Experts, which learns a dynamic, data-driven decomposition of the FFN layers, rather than relying on hand-designed separation. We study expert granularity, sparsity, and design choices. Fine-grained experts are critical (G=16 saturates performance), and per-modality shared experts outperform global ones. Most remarkably, modality specialization emerges naturally: the majority of experts specialize in text, but vision and multimodal experts increase in later layers. Vision experts are general-purpose — the same experts handle both understanding and generation with high correlation (r > 0.9) across all layers.
                         </p>
 
-                        <div class="section-figure">
-                            <img src="assets/figures/moe_specialization.png" alt="Emergent modality specialization in MoE routing">
+                        <div class="section-figure section-figure--framed">
+                            <img src="assets/figures/moe_specialization.png" alt="Emergent modality specialization in MoE routing" loading="lazy">
                         </div>
                         <p class="section-caption">
                             <strong>Modality specialization emerges naturally.</strong> Most experts are text-focused, but the proportion of vision and multimodal experts increases with network depth — without any explicit modality routing constraints.
@@ -355,15 +382,15 @@
                             Sparse scaling is highly effective: increasing total experts from 32 to 1008 at fixed active compute consistently improves both language and vision. Since active parameters remain constant, MoE provides an efficient scaling strategy — capacity grows without increasing training or inference costs. Notably, RAE-based models successfully leverage the added capacity to improve both diffusion and text loss, while VAE-based models stagnate at higher expert counts for diffusion loss.
                         </p>
 
-                        <div class="section-figure">
-                            <img src="assets/figures/moe_sparsity_perf.png" alt="Sparsity scales multimodal performance">
+                        <div class="section-figure section-figure--wide section-figure--framed">
+                            <img src="assets/figures/moe_sparsity_perf.png" alt="Sparsity scales multimodal performance" loading="lazy">
                         </div>
                         <p class="section-caption">
                             <strong>Sparsity scales multimodal performance.</strong> At fixed active compute (16 experts), increasing total expert count from 32 to 1008 consistently improves both language (lower PPL) and vision (lower diffusion loss, higher GenEval).
                         </p>
 
-                        <div class="section-figure">
-                            <img src="assets/figures/moe_sparsity_loss.png" alt="Training loss scaling in multimodal MoE pretraining">
+                        <div class="section-figure section-figure--wide section-figure--framed">
+                            <img src="assets/figures/moe_sparsity_loss.png" alt="Training loss scaling in multimodal MoE pretraining" loading="lazy">
                         </div>
                         <p class="section-caption">
                             <strong>RAE scales with sparsity; VAE stagnates.</strong> Text loss improves consistently regardless of encoder. Diffusion loss continues scaling for RAE (SigLIP) but stagnates for VAE (FLUX) at higher expert counts.
@@ -376,8 +403,8 @@
                             Combining the best choices thus far — RAE encoder (SigLIP), MoE parameter separation, and x-prediction — yields cumulative gains at every step. Starting from the Transfusion baseline, each improvement progressively improves both text perplexity and image generation quality, validating our design conclusions from this controlled empirical study.
                         </p>
 
-                        <div class="section-figure section-figure--tall" style="max-width: 860px; margin-left: auto; margin-right: auto;">
-                            <img src="assets/figures/progression.png" alt="Progression of design choices from Transfusion baseline to final model">
+                        <div class="section-figure section-figure--tall section-figure--framed" style="max-width: 860px; margin-left: auto; margin-right: auto;">
+                            <img src="assets/figures/progression.png" alt="Progression of design choices from Transfusion baseline to final model" loading="lazy">
                         </div>
                         <p class="section-caption">
                             <strong>Cumulative impact of design choices.</strong> Starting from the Transfusion baseline, each improvement — modality-specific FFNs, RAE encoder (SigLIP), MoE, and x-prediction — progressively improves both text perplexity and image generation (DPG Score).
@@ -404,8 +431,8 @@
                             Prior scaling studies focus on language models; few examine how vision and language scale jointly. We conduct IsoFLOP experiments — sweeping model sizes and token counts at fixed compute budgets — to derive scaling laws for both modalities within a single unified model. In dense models, we uncover a fundamental asymmetry: language scales similarly to Chinchilla (D<sub>opt</sub> &prop; C<sup>0.53</sup>), while vision is significantly more data-hungry (D<sub>opt</sub> &prop; C<sup>0.63</sup>). A single compute-optimal trend does not exist — scaling a unified model requires balancing these competing requirements.
                         </p>
 
-                        <div class="section-figure">
-                            <img src="assets/figures/dense_scaling.png" alt="Scaling laws for unified dense models — vision is more data-hungry than language">
+                        <div class="section-figure section-figure--wide section-figure--framed">
+                            <img src="assets/figures/dense_scaling.png" alt="Scaling laws for unified dense models — vision is more data-hungry than language" loading="lazy">
                         </div>
                         <p class="section-caption">
                             <strong>Scaling laws for unified dense models.</strong> Vision requires more data relative to parameters (D<sub>opt</sub> &prop; C<sup>0.63</sup>) while language follows near-balanced Chinchilla scaling (D<sub>opt</sub> &prop; C<sup>0.53</sup>).
@@ -415,8 +442,8 @@
                             MoE architectures alleviate this asymmetry. The gap in scaling exponents shrinks from 0.10 (dense) to 0.05 (MoE), as language scaling shifts to become more data-hungry — effectively harmonizing with vision. At matched FLOPs, MoE allocates 45% fewer active parameters while training on 2–2.5&times; more tokens, leveraging 3–4&times; total capacity through inactive experts. The ability of sparse architectures to harmonize the scaling requirements of different modalities makes it well-suited for unified multimodal training.
                         </p>
 
-                        <div class="section-figure">
-                            <img src="assets/figures/moe_scaling.png" alt="MoE narrows the vision-language scaling gap">
+                        <div class="section-figure section-figure--wide section-figure--framed">
+                            <img src="assets/figures/moe_scaling.png" alt="MoE narrows the vision-language scaling gap" loading="lazy">
                         </div>
                         <p class="section-caption">
                             <strong>MoE narrows the vision-language scaling gap.</strong> The exponent gap shrinks from 0.10 (dense) to 0.05 (MoE). MoE harmonizes the divergent scaling behaviors by making language more data-hungry to match vision.
@@ -466,7 +493,7 @@
     <!-- Footer -->
     <footer class="site-footer">
         <div class="container">
-            <p>Questions? Contact David Fan and Shengbang (Peter) Tong.</p>
+            <p>Questions? Contact <a href="http://davidfan.io/">David Fan</a> and <a href="https://tsb0601.github.io/">Shengbang (Peter) Tong</a>.</p>
         </div>
     </footer>
 
@@ -544,6 +571,33 @@
                 }
             });
         }
+    })();
+
+    (function() {
+        const toggleButton = document.getElementById('theme-toggle');
+        if (!toggleButton) return;
+
+        function getCurrentTheme() {
+            return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+        }
+
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                toggleButton.setAttribute('aria-label', 'Switch to light mode');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                toggleButton.setAttribute('aria-label', 'Switch to dark mode');
+            }
+        }
+
+        applyTheme(getCurrentTheme());
+
+        toggleButton.addEventListener('click', function() {
+            const nextTheme = getCurrentTheme() === 'dark' ? 'light' : 'dark';
+            applyTheme(nextTheme);
+            localStorage.setItem('theme', nextTheme);
+        });
     })();
 
     // Lightbox for figures

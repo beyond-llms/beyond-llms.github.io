@@ -2,7 +2,8 @@
    1. VARIABLES & RESET
    ============================================= */
 :root {
-    --primary-color: #1A6B5A;
+    /* --primary-color: #1A6B5A; */
+    --primary-color: #377be4;
     --secondary-color: #C88A3E;
     --accent-color: #4C6EF5;
     --light-color: #FFFFFF;
@@ -15,6 +16,18 @@
     --link-color: var(--primary-color);
 }
 
+[data-theme="dark"] {
+    --primary-color: #0972d8;
+    --secondary-color: #E0A854;
+    --accent-color: #7B93F7;
+    --light-color: #1A1A1A;
+    --dark-color: #E8E8E8;
+    --text-color: #D0D0D0;
+    --background-color: #121212;
+    --header-gradient: linear-gradient(180deg, #121212 0%, #121212 100%);
+    --link-color: var(--primary-color);
+}
+
 *, *::before, *::after { box-sizing: border-box; }
 
 /* =============================================
@@ -23,7 +36,7 @@
 body {
     font-family: var(--font-family);
     line-height: 1.8;
-    font-size: 17px;
+    font-size: 1.1rem;
     font-weight: 400;
     background-color: var(--background-color);
     color: var(--text-color);
@@ -36,6 +49,67 @@ body {
 img { max-width: 100%; height: auto; }
 
 a { color: var(--link-color); }
+
+/* Theme toggle button */
+.theme-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 200;
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    background-color: rgba(255, 255, 255, 0.9);
+    color: var(--text-color);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.theme-toggle:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+.theme-toggle__icon {
+    width: 18px;
+    height: 18px;
+}
+
+.theme-toggle__icon--sun {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    display: none;
+}
+
+.theme-toggle__icon--moon {
+    fill: currentColor;
+    display: block;
+}
+
+[data-theme="dark"] .theme-toggle {
+    border-color: rgba(255, 255, 255, 0.18);
+    background-color: rgba(18, 18, 18, 0.9);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
+}
+
+[data-theme="dark"] .theme-toggle:hover {
+    border-color: rgba(255, 255, 255, 0.28);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.34);
+}
+
+[data-theme="dark"] .theme-toggle__icon--sun { display: block; }
+[data-theme="dark"] .theme-toggle__icon--moon { display: none; }
 
 /* =============================================
    3. LAYOUT
@@ -63,7 +137,7 @@ a { color: var(--link-color); }
     font-weight: 600;
     font-size: 3.4rem;
     line-height: 1.15;
-    margin-bottom: 28px;
+    margin-bottom: 6px;
     position: relative;
     z-index: 1;
     display: block;
@@ -71,10 +145,22 @@ a { color: var(--link-color); }
     letter-spacing: -0.5px;
 }
 
+.paper-subtitle {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 3.8rem;
+    line-height: 1.15;
+    margin-top: 0px;
+    margin-bottom: 28px;
+    color: var(--dark-color);
+    text-align: center;
+    letter-spacing: -0.5px;
+}
+
 .author-line {
     font-size: 1.05rem;
     font-weight: 400;
-    margin: 6px 0;
+    margin: 0.5rem 0;
     line-height: 1.6;
     letter-spacing: 0.01em;
     display: flex;
@@ -83,6 +169,12 @@ a { color: var(--link-color); }
     align-items: center;
     position: relative;
     z-index: 1;
+}
+
+.author-line--middle {
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .author-link {
@@ -146,7 +238,7 @@ a { color: var(--link-color); }
     position: absolute;
     top: -5px;
     left: -12px;
-    font-size: 14px;
+    font-size: 0.9rem;
     color: var(--text-color);
 }
 
@@ -342,9 +434,10 @@ a { color: var(--link-color); }
    6. CONTENT SECTIONS
    ============================================= */
 .section-title {
+    font-family: var(--font-display);
     margin: 36px 0 28px 0;
     font-weight: 500;
-    font-size: 30px;
+    font-size: 2rem;
     color: var(--dark-color);
     padding-bottom: 10px;
     text-align: center;
@@ -363,9 +456,10 @@ a { color: var(--link-color); }
 }
 
 .subsection-title {
+    font-family: var(--font-display);
     margin: 36px 0 24px 0;
     font-weight: 500;
-    font-size: 24px;
+    font-size: 1.5rem;
     color: var(--dark-color);
     text-align: center;
     letter-spacing: -0.1px;
@@ -439,6 +533,22 @@ a { color: var(--link-color); }
 
 .section-figure--tall img {
     max-height: 560px;
+}
+
+.section-figure--wide {
+    max-width: 1000px;
+}
+
+.section-figure--framed img {
+    background: #fff;
+    padding: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.section-figure--wide img {
+    /* max-height: 480px; */
+    /* max-height: 520px; */
+    max-height: 50%;
 }
 
 /* Side-by-side figures */
@@ -782,6 +892,9 @@ a { color: var(--link-color); }
     border: 1px solid rgba(0, 0, 0, 0.07);
     border-radius: 8px;
     padding: 24px 28px;
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .citation-block pre {
@@ -893,6 +1006,119 @@ a { color: var(--link-color); }
     text-decoration: none;
 }
 
+[data-theme="dark"] .author-link sup,
+[data-theme="dark"] .author-mark,
+[data-theme="dark"] .equal-contribution {
+    color: #9CA3AF;
+}
+
+[data-theme="dark"] .paper-btn {
+    color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .paper-btn:hover {
+    background-color: #2A8A74;
+}
+
+[data-theme="dark"] .section-label,
+[data-theme="dark"] .section-caption,
+[data-theme="dark"] .paper-invite,
+[data-theme="dark"] .site-footer,
+[data-theme="dark"] .back-to-top,
+[data-theme="dark"] .section-nav-link,
+[data-theme="dark"] .copy-citation-btn,
+[data-theme="dark"] .arch-card__toggle {
+    color: #9CA3AF;
+}
+
+[data-theme="dark"] .section-caption strong {
+    color: #CBD5E1;
+}
+
+[data-theme="dark"] .tldr-keyword .keyword-tooltip {
+    color: #D0D0D0;
+    background: #1F1F1F;
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="dark"] .tldr-keyword .keyword-tooltip::after {
+    border-top-color: #1F1F1F;
+}
+
+[data-theme="dark"] .section-divider::before {
+    background-color: rgba(255, 255, 255, 0.14);
+}
+
+[data-theme="dark"] .section-divider::after {
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+[data-theme="dark"] .section-nav {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .section-nav-sep {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .citation-block {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .copy-citation-btn {
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="dark"] .copy-citation-btn:hover {
+    background-color: rgba(61, 191, 160, 0.08);
+}
+
+[data-theme="dark"] .copy-citation-btn.copied {
+    background-color: rgba(61, 191, 160, 0.12);
+}
+
+[data-theme="dark"] .callout--gold { background: rgba(224, 168, 84, 0.08); }
+[data-theme="dark"] .callout--teal { background: rgba(61, 191, 160, 0.08); }
+[data-theme="dark"] .callout--blue { background: rgba(123, 147, 247, 0.08); }
+
+[data-theme="dark"] .arch-card {
+    border-color: rgba(123, 147, 247, 0.22);
+    background: rgba(123, 147, 247, 0.05);
+}
+
+[data-theme="dark"] .arch-card:hover {
+    border-color: rgba(123, 147, 247, 0.35);
+}
+
+[data-theme="dark"] .arch-card[open] {
+    border-color: rgba(123, 147, 247, 0.35);
+    box-shadow: 0 2px 12px rgba(123, 147, 247, 0.16);
+}
+
+[data-theme="dark"] .arch-card__header:hover {
+    background-color: rgba(123, 147, 247, 0.1);
+}
+
+[data-theme="dark"] .arch-card__step {
+    background: rgba(123, 147, 247, 0.2);
+}
+
+[data-theme="dark"] .tldr-box {
+    background-color: rgba(61, 191, 160, 0.08);
+    border-color: rgba(61, 191, 160, 0.18);
+}
+
+[data-theme="dark"] .institution-logo {
+    filter: brightness(1.8) saturate(0.9);
+    opacity: 0.9;
+}
+
+[data-theme="dark"] .section-figure--framed img {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
 /* =============================================
    11. RESPONSIVE — TABLET (≤ 1200px)
    ============================================= */
@@ -910,7 +1136,7 @@ a { color: var(--link-color); }
    12. RESPONSIVE — MOBILE (≤ 768px)
    ============================================= */
 @media (max-width: 768px) {
-    body { font-size: 16px; }
+    body { font-size: 1rem; }
 
     .container {
         padding-left: 16px;
@@ -923,8 +1149,12 @@ a { color: var(--link-color); }
 
 
     .paper-title {
-        font-size: 2.2rem;
-        margin-bottom: 24px;
+        font-size: 2.4rem;
+    }
+
+    .paper-subtitle {
+        font-size: 2.4rem;
+        margin-bottom: 20px;
     }
 
     .author-line {
@@ -943,12 +1173,12 @@ a { color: var(--link-color); }
     }
 
     .section-title {
-        font-size: 24px;
+        font-size: 2.2rem;
         margin: 36px 0 24px 0;
     }
 
     .subsection-title {
-        font-size: 20px;
+        font-size: 2rem;
         margin: 28px 0 20px 0;
     }
 
@@ -1059,13 +1289,29 @@ a { color: var(--link-color); }
         margin-bottom: 12px;
     }
 
+    .theme-toggle {
+        top: 10px;
+        right: 10px;
+        width: 34px;
+        height: 34px;
+    }
+
+    .theme-toggle__icon {
+        width: 16px;
+        height: 16px;
+    }
+
+    [data-theme="dark"] .section-nav-link.active {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
 }
 
 /* =============================================
    13. RESPONSIVE — SMALL MOBILE (≤ 576px)
    ============================================= */
 @media (max-width: 576px) {
-    body { font-size: 15px; }
+    body { font-size: 0.9rem; }
 
     .container {
         padding-left: 12px;
@@ -1077,7 +1323,12 @@ a { color: var(--link-color); }
     }
 
     .paper-title {
-        font-size: 1.8rem;
+        font-size: 2.1rem;
+    }
+
+    .paper-subtitle {
+        font-size: 2.1rem;
+        margin-bottom: 30px;
     }
 
     .author-line {
@@ -1090,12 +1341,12 @@ a { color: var(--link-color); }
     }
 
     .section-title {
-        font-size: 22px;
+        font-size: 1.8rem;
         margin: 32px 0 20px 0;
     }
 
     .subsection-title {
-        font-size: 18px;
+        font-size: 1.6rem;
         margin: 24px 0 16px 0;
     }
 
