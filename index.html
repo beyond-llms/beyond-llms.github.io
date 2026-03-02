@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Beyond Language Modeling: An Exploration of Multimodal Pretraining" />
+    <meta property="og:description" content="Empirical insights on representation, data, architecture, and scaling for native multimodal pretraining." />
+    <meta property="og:image" content="https://davidfan.io/webssl/assets/figures/scale_model_wide_gradient.png" />
+    <title>Beyond Language Pretraining</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Consolidated CSS -->
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header-section" id="overview">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-11 mx-auto text-center">
+                    <h1 class="paper-title">Beyond Language Modeling: An Exploration of Multimodal Pretraining</h1>
+                    
+                    <div class="author-line">
+                        <span><a href="https://tsb0601.github.io/" class="author-link">Shengbang Tong<sup>1,2,<span class="author-mark">*</span></sup></a></span>
+                        <span><a href="http://davidfan.io/" class="author-link">David Fan<sup>1,<span class="author-mark">*</span></sup></a></span>
+                        <span><a href="https://johnlnguyen.com/" class="author-link">John Nguyen<sup>1,<span class="author-mark">*</span></sup></a></span>
+                    </div>
+                    <div class="author-line">
+                        <span><a href="https://ellisbrown.github.io/" class="author-link">Ellis Brown<sup>1,2</sup></a></span>
+                        <span><a href="https://gaoyuezhou.github.io/" class="author-link">Gaoyue Zhou<sup>1,2</sup></a></span>
+                        <span><a href="https://jasonqsy.github.io/" class="author-link">Shengyi Qian<sup>1</sup></a></span>
+                        <span><a href="https://bytetriper.github.io/" class="author-link">Boyang Zheng<sup>2</sup></a></span>
+                        <span><a href="https://webalorn.com/" class="author-link">Théophane Vallaeys<sup>1</sup></a></span>
+                        <span><a href="https://junlinhan.github.io/" class="author-link">Junlin Han<sup>1</sup></a></span>
+                        <span><a href="https://cs.nyu.edu/~fergus/" class="author-link">Rob Fergus<sup>1</sup></a></span>
+                        <span><a href="https://scholar.google.com/citations?user=MBU5wKEAAAAJ&hl=en" class="author-link">Naila Murray<sup>1</sup></a></span>
+                        <span><a href="https://scholar.google.com/citations?user=0VG3sQIAAAAJ&hl=en" class="author-link">Marjan Ghazvininejad<sup>1</sup></a></span>
+                        <span><a href="https://scholar.google.com/citations?user=SnQnQicAAAAJ&hl=en" class="author-link">Mike Lewis<sup>1</sup></a></span>
+                        <span><a href="https://scholar.google.com/citations?user=euUV4iUAAAAJ&hl=en" class="author-link">Nicolas Ballas<sup>1</sup></a></span>
+                        <span><a href="https://www.amirbar.net/" class="author-link">Amir Bar<sup>1</sup></a></span>
+                        <span><a href="https://scholar.google.ca/citations?user=cMPKe9UAAAAJ&hl=en" class="author-link">Michael Rabbat<sup>1</sup></a></span>
+                        <span><a href="https://thoth.inrialpes.fr/~verbeek/" class="author-link">Jakob Verbeek<sup>1</sup></a></span>
+                    </div>
+                    <div class="author-line">
+                        <span><a href="https://www.cs.washington.edu/people/faculty/lsz" class="author-link">Luke Zettlemoyer<sup>1,<span class="author-mark">†</span></sup></a></span>
+                        <span><a href="https://koustuvsinha.com/" class="author-link">Koustuv Sinha<sup>1,<span class="author-mark">†</span></sup></a></span>
+                        <span><a href="https://scholar.google.com/citations?user=WLN3QrAAAAAJ&hl=en" class="author-link">Yann LeCun<sup>2,<span class="author-mark">†</span></sup></a></span>
+                        <span><a href="https://www.sainingxie.com/" class="author-link">Saining Xie<sup>2,<span class="author-mark">†</span></sup></a></span>
+                    </div>
+
+                    <div class="equal-contribution">
+                        <span><sup><span class="author-mark">*</span></sup> Equal contribution</span>
+                        <span class="mx-2 eq-separator">|</span>
+                        <span><sup><span class="author-mark">†</span></sup> Equal advising</span>
+                    </div>
+
+                    <div class="institution-logos">
+                        <div class="institution-logo-wrapper">
+                            <img src="assets/logos/meta.png" alt="FAIR, Meta" class="institution-logo">
+                            <sup>1</sup>
+                        </div>
+                        <div class="institution-logo-wrapper">
+                            <img src="assets/logos/nyu.png" alt="New York University" class="institution-logo">
+                            <sup>2</sup>
+                        </div>
+                    </div>
+
+                    <div class="paper-btn-wrapper">
+                        <a href="#" class="btn paper-btn"><i class="fas fa-file-alt me-2"></i>Paper<i class="fas fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- TL;DR Section -->
+        <section class="row sec-teal" id="tldr">
+            <div class="col-lg-11 mx-auto">
+                <h2 class="section-title" style="margin-top: 12px;">TL;DR</h2>
+                <div class="tldr-box rounded mb-3" style="padding: 22px 36px 24px 36px;">
+                    
+                    <div class="row mb-3">
+                        <div class="col-lg-12">
+                            <p class="tldr-headline mb-0">
+                                We 
+                                <span class="tldr-keyword" data-color="primary">can<span class="keyword-tooltip">Visual data is largely orthogonal to language, with minimal impact on text perplexity. Multimodal co-training shows positive transfer for VQA, image generation, and world modeling.</span></span> 
+                                unify multimodal pretraining with 
+                                <span class="tldr-keyword" data-color="secondary">RAE<span class="keyword-tooltip">Representation Autoencoders (e.g. SigLIP 2) excel at both visual understanding and generation with a single encoder, eliminating the need for dual representations.</span></span> and 
+                                <span class="tldr-keyword" data-color="accent">MoE<span class="keyword-tooltip">Mixture-of-Experts is well suited for multimodal pretraining — it naturally learns modality specialization and bridges the vision-language scaling asymmetry.</span></span>.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <p class="tldr-abstract mb-0">The visual world is the next frontier for advancing foundation models beyond language. Despite growing interest, the design space for native multimodal pretraining remains largely uncharted. We seek to provide empirical clarity through controlled, from-scratch experiments. We adopt the Transfusion framework with next-token prediction for language and diffusion for vision, and train on data ranging from pure text to raw video, image / text pairs, and even action-conditioned video. We explore the visual representation, data composition, MoE design, and the scaling behavior of vision vs. language.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Sticky Section Navigation -->
+        <nav id="section-nav" class="section-nav">
+            <div class="nav-mobile-header">
+                <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle navigation">
+                    <span></span><span></span><span></span>
+                </button>
+                <span class="nav-mobile-title">Beyond Language Modeling</span>
+            </div>
+            <div class="section-nav-inner">
+                <a class="section-nav-link nav-top-link" data-section="overview"><i class="fas fa-arrow-up" style="font-size: 0.7em;"></i> Top</a>
+                <span class="section-nav-sep">·</span>
+                <a class="section-nav-link nav-color-gold" data-section="sec-representation">Representation</a>
+                <span class="section-nav-sep">·</span>
+                <a class="section-nav-link nav-color-teal" data-section="sec-data">Data</a>
+                <span class="section-nav-sep">·</span>
+                <a class="section-nav-link nav-color-teal" data-section="sec-worldmodel">World Modeling</a>
+                <span class="section-nav-sep">·</span>
+                <a class="section-nav-link nav-color-blue" data-section="sec-architecture">Architecture</a>
+                <span class="section-nav-sep">·</span>
+                <a class="section-nav-link nav-color-blue" data-section="sec-scaling">Scaling</a>
+            </div>
+        </nav>
+
+        <div class="sidebar-content-area">
+            <!-- Section 1: Representation (gold) -->
+            <section id="sec-representation" class="sec-gold">
+                <div class="row">
+                    <div class="col-lg-11 mx-auto">
+                        <h2 class="section-title">Unifying Understanding and Generation with RAE</h2>
+
+                        <p class="body-text">
+                            Prior convention holds that visual understanding and generation require separate encoders — typically a semantic encoder (e.g. SigLIP 2) for understanding and a VAE for generation. This duality complicates model design and adds overhead to both training and inference. Recent work on Representation Autoencoders (RAE), however, shows that diffusion can operate effectively in high-dimensional semantic latent spaces, suggesting that a single encoder may suffice for both tasks.
+                        </p>
+
+                        <p class="body-text">
+                            We study three families of encoders — VAEs (SD-VAE, FLUX.1), semantic encoders (SigLIP 2, DINOv2, WebSSL), and raw pixels — in a controlled setting at 520B text + 520B multimodal tokens. All encoders achieve comparable text perplexity, confirming that the choice of visual representation has minimal impact on language capabilities. For vision, semantic encoders consistently outperform VAEs on both understanding <em>and</em> generation: SigLIP 2 achieves the highest DPGBench, GenEval, and VQA scores simultaneously, followed by WebSSL-L.
+                        </p>
+
+                        <div class="section-figure">
+                            <img src="assets/figures/encoder_comparison.png" alt="Encoder comparison across text perplexity, image generation, and VQA">
+                        </div>
+                        <p class="section-caption">
+                            <strong>RAE outperform VAEs for both generation and understanding.</strong> RAE (SigLIP 2) achieves the highest scores on DPGBench, GenEval, and VQA while maintaining text perplexity comparable to the text-only baseline.
+                        </p>
+
+                        <div class="callout callout--gold">
+                            <p>
+                                <strong>Suggestion:</strong> Adopt a single RAE-based encoder (e.g. SigLIP 2 or WebSSL). It simplifies the architecture and achieves both strong visual understanding and generation, while preserving text performance.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="section-divider">
+
+            <!-- Section 2: Data (teal) -->
+            <section id="sec-data" class="sec-teal">
+                <div class="row">
+                    <div class="col-lg-11 mx-auto">
+                        <h2 class="section-title">Vision and Language are Complementary</h2>
+
+                        <p class="body-text">
+                            A central concern in unified pretraining is whether adding visual data inevitably degrades language performance — the so-called "modality tax." We study this by training on combinations of text, raw video, image-text pairs (MetaCLIP), and action-conditioned video, all at 520B text + 520B multimodal tokens with a text-only baseline at 520B tokens. We find that Text + Video matches and sometimes even improves upon the text-only baseline in perplexity, suggesting that raw visual data is compatible with language modeling. The observed degradation from image-text data stems not from vision itself, but from distributional shifts in the text captions. However, adding multimodal data in general has a slight impact on out-of-distribution text performance, as shown by the perplexity on the Notes dataset.
+                        </p>
+
+                        <div class="section-figure">
+                            <img src="assets/figures/data_composition.png" alt="Impact of pretraining data composition on text perplexity">
+                        </div>
+                        <p class="section-caption">
+                            <strong>Visual data does not compete with text.</strong> Text + Video matches the text-only perplexity baseline. The perceived "modality tax" stems from text distribution shifts in image captions, not from the visual signal itself.
+                        </p>
+
+                        <p class="body-text">
+                            When we measure cross-modal synergy systematically, multimodal co-training consistently exceeds unimodal performance for visual generation. This effect also extends to understanding: supplementing 20B VQA tokens with general-purpose data (text, video, or image-text) yields higher accuracy than scaling task-specific VQA data to 100B alone.
+                        </p>
+
+                        <div class="section-figure-row">
+                            <div class="section-figure-col">
+                                <img src="assets/figures/data_composition_vision_1x2.png" alt="Cross-modal synergy in visual generation">
+                            </div>
+                            <div class="section-figure-col">
+                                <img src="assets/figures/data_vqa.png" alt="General pretraining outperforms specialized VQA scaling">
+                            </div>
+                        </div>
+                        <p class="section-caption">
+                            <strong>General pretraining outperforms specialized scaling.</strong> Left: Vision and language are mutually beneficial. Adding text tokens to a fixed amount of image tokens improves image generation.
+                            Right: Supplementing 20B VQA tokens with general pretraining data yields higher accuracy than scaling task-specific VQA data to 100B.
+                        </p>
+
+                        <div class="callout callout--teal">
+                            <p>
+                                <strong>Suggestion:</strong> Train with multimodal data (e.g. raw video, image-text). Visual data minimally interferes with language modeling, while unlocking positive synergy for downstream capabilities.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="section-divider">
+
+            <!-- Section 3: World Model (teal) -->
+            <section id="sec-worldmodel" class="sec-teal">
+                <div class="row">
+                    <div class="col-lg-11 mx-auto">
+                        <h2 class="section-title">World Modeling Emerges from General Pretraining</h2>
+
+                        <p class="body-text">
+                            Given that vision and language are complementary, we explore whether unified multimodal models can learn world modeling — without any architectural changes. We adopt the <a href="https://www.amirbar.net/nwm/" target="_blank">Navigation World Model</a> (NWM) setting, where the task is to predict the next visual state given context frames and a navigation action. Unlike prior work which uses specialized action encoders, we represent actions directly as <i>text tokens</i>, framing the task as video + text &rarr; image prediction within our standard model.
+                        </p>
+
+                        <p class="body-text">
+                            We find that world modeling capabilities emerge primarily from general multimodal pretraining rather than domain-specific data. Adding unsupervised video data yields the largest gain — outperforming scaling in-domain NWM data alone. More strikingly, when we vary the ratio of domain-specific data while keeping total training data fixed, performance saturates at just 1% in-domain data. This suggests that the core capability is acquired from general pretraining, and in-domain data just helps the model to learn the specific task format. This also implies that to build better world models, we do not necessarily have to collect large-scale action-conditioned data — we can also leverage the abundance of general data available.
+                        </p>
+
+                        <div class="section-figure">
+                            <img src="assets/figures/vwm_dataratio.png" alt="World modeling transfers with minimal alignment — performance saturates at 1% domain data">
+                        </div>
+                        <p class="section-caption">
+                            <strong>World modeling transfers with minimal alignment.</strong> Performance saturates at just 1% in-domain data, suggesting that the core capability is acquired from general multimodal pretraining.
+                        </p>
+                        
+                        <p class="body-text">We show some qualitative samples of navigation with free-form language and WASD-style navigation actions. Native multimodal pretraining enables the model to generalize out-of-distribution, and allows the use of a nearly unlimited set of actions, via natural language, unlike recent works such as Genie 3 which can only utilize a limited set of pretrained actions. Note that we do not make any architectural changes to enable world modeling — we simply pass in actions as text tokens. See the paper for more qualitative examples.</p>
+                        <div class="section-figure section-figure--tall">
+                            <img src="assets/figures/nwm_example_1.png" alt="Controllable future prediction with free-form language and WASD navigation actions">
+                        </div>
+                        <p class="section-caption">
+                            <strong>The model learns controllable future prediction.</strong> Given four context frames (ctx0–ctx3), the model predicts future frames conditioned on both free-form natural language and WASD-style navigation actions.
+                        </p>
+                        
+                        <div class="section-figure section-figure--tall" style="max-width: 860px; margin-left: auto; margin-right: auto;">
+                            <img src="assets/figures/stochasticity.png" alt="Counterfactual">
+                        </div>
+                        <p class="section-caption">
+                            <strong>Simulating counterfactuals.</strong> Given four context frames, the model predicts four counterfactual action trajectories using a mixture of free-form natural language and WASD-style navigation actions.
+                        </p>
+
+                        <div class="callout callout--teal">
+                            <p>
+                                <strong>Takeaway:</strong> World modeling capabilities emerge from broad multimodal pretraining — general video data outperforms specialized domain scaling, and as little as 1% in-domain data suffices for unlocking new capabilities.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="section-divider">
+
+            <!-- Section 4: Architecture (blue) -->
+            <section id="sec-architecture" class="sec-blue">
+                <div class="row">
+                    <div class="col-lg-11 mx-auto">
+                        <h2 class="section-title">Unified Multimodal Architecture Design</h2>
+
+                        <p class="body-text">
+                            Given the Transfusion framework, two key design questions remain: <em>1) What visual representation should the model use?</em> and <em>2) How should parameters be allocated across modalities?</em> We walk through these below — each step is validated by controlled experiments. 
+                        </p>
+
+                        <!-- Toggle Card 1: FFN Variants -->
+                        <details class="arch-card" open>
+                            <summary class="arch-card__header">
+                                <span class="arch-card__step">Step 1</span>
+                                <span class="arch-card__title">FFN Variants: Shared vs. Modality-Specific</span>
+                                <span class="arch-card__toggle"><i class="fas fa-chevron-down"></i></span>
+                            </summary>
+                            <div class="arch-card__body">
+                                <p class="body-text">
+                                    The Transfusion baseline shares all FFN parameters across text and vision. A simple first improvement is to give each modality its own FFN — "modality-specific FFNs." We find that modality-specific FFNs improve performance across the board.
+                                </p>
+
+                                <div class="section-figure">
+                                    <img src="assets/figures/progression_ffn.png" alt="FFN Variants: Shared vs Modality-Specific">
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Toggle Card 2: Vision Encoder -->
+                        <details class="arch-card">
+                            <summary class="arch-card__header">
+                                <span class="arch-card__step">Step 2</span>
+                                <span class="arch-card__title">Vision Encoder: VAE vs. RAE</span>
+                                <span class="arch-card__toggle"><i class="fas fa-chevron-down"></i></span>
+                            </summary>
+                            <div class="arch-card__body">
+                                <p class="body-text">
+                                    With modality-specific FFNs, we compare vision encoders: SD-VAE, Flux.1, a dual-encoder (SigLIP + SD-VAE), and a single RAE (SigLIP 2). SigLIP 2 achieves the best overall text perplexity and image generation performance.
+                                </p>
+
+                                <div class="section-figure">
+                                    <img src="assets/figures/progression_encoder.png" alt="Vision Encoder comparison: VAE vs RAE vs dual-encoder">
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Toggle Card 3: Parameter Separation -->
+                        <details class="arch-card">
+                            <summary class="arch-card__header">
+                                <span class="arch-card__step">Step 3</span>
+                                <span class="arch-card__title">Parameter Separation: Dense to MoE</span>
+                                <span class="arch-card__toggle"><i class="fas fa-chevron-down"></i></span>
+                            </summary>
+                            <div class="arch-card__body">
+                                <p class="body-text">
+                                    With SigLIP 2 as the encoder, we explore how to allocate parameters across modalities. MoE clearly outperforms all other methods for parameter separation.
+                                </p>
+
+                                <div class="section-figure">
+                                    <img src="assets/figures/progression_separation.png" alt="Parameter separation: Dense vs MoT vs MoE">
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Toggle Card 4: Prediction Target -->
+                        <details class="arch-card">
+                            <summary class="arch-card__header">
+                                <span class="arch-card__step">Step 4</span>
+                                <span class="arch-card__title">Prediction Target: x-Prediction</span>
+                                <span class="arch-card__toggle"><i class="fas fa-chevron-down"></i></span>
+                            </summary>
+                            <div class="arch-card__body">
+                                <p class="body-text">
+                                    Finally, we compare diffusion prediction targets. x-prediction achieves a good trade-off between competitive text perplexity and better image generation.
+                                </p>
+
+                                <div class="section-figure">
+                                    <img src="assets/figures/progression_pred.png" alt="Prediction target: v-prediction vs x-prediction">
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- MoE Deep Dive (restored from master) -->
+                        <h3 class="subsection-title">Developing MoE for Multimodal Models</h3>
+
+                        <p class="body-text">
+                            Modality-specific FFNs improve multimodal pretraining by giving each modality its own parameters. We take this principle further with Mixture-of-Experts, which learns a dynamic, data-driven decomposition of the FFN layers, rather than relying on hand-designed separation. We study expert granularity, sparsity, and design choices. Fine-grained experts are critical (G=16 saturates performance), and per-modality shared experts outperform global ones. Most remarkably, modality specialization emerges naturally: the majority of experts specialize in text, but vision and multimodal experts increase in later layers. Vision experts are general-purpose — the same experts handle both understanding and generation with high correlation (r > 0.9) across all layers.
+                        </p>
+
+                        <div class="section-figure">
+                            <img src="assets/figures/moe_specialization.png" alt="Emergent modality specialization in MoE routing">
+                        </div>
+                        <p class="section-caption">
+                            <strong>Modality specialization emerges naturally.</strong> Most experts are text-focused, but the proportion of vision and multimodal experts increases with network depth — without any explicit modality routing constraints.
+                        </p>
+
+                        <p class="body-text">
+                            Sparse scaling is highly effective: increasing total experts from 32 to 1008 at fixed active compute consistently improves both language and vision. Since active parameters remain constant, MoE provides an efficient scaling strategy — capacity grows without increasing training or inference costs. Notably, RAE-based models successfully leverage the added capacity to improve both diffusion and text loss, while VAE-based models stagnate at higher expert counts for diffusion loss.
+                        </p>
+
+                        <div class="section-figure">
+                            <img src="assets/figures/moe_sparsity_perf.png" alt="Sparsity scales multimodal performance">
+                        </div>
+                        <p class="section-caption">
+                            <strong>Sparsity scales multimodal performance.</strong> At fixed active compute (16 experts), increasing total expert count from 32 to 1008 consistently improves both language (lower PPL) and vision (lower diffusion loss, higher GenEval).
+                        </p>
+
+                        <div class="section-figure">
+                            <img src="assets/figures/moe_sparsity_loss.png" alt="Training loss scaling in multimodal MoE pretraining">
+                        </div>
+                        <p class="section-caption">
+                            <strong>RAE scales with sparsity; VAE stagnates.</strong> Text loss improves consistently regardless of encoder. Diffusion loss continues scaling for RAE (SigLIP) but stagnates for VAE (FLUX) at higher expert counts.
+                        </p>
+
+                        <!-- Summary: Putting It All Together -->
+                        <h3 class="subsection-title" style="margin-top: 44px;">Putting It All Together</h3>
+
+                        <p class="body-text">
+                            Combining the best choices thus far — RAE encoder (SigLIP), MoE parameter separation, and x-prediction — yields cumulative gains at every step. Starting from the Transfusion baseline, each improvement progressively improves both text perplexity and image generation quality, validating our design conclusions from this controlled empirical study.
+                        </p>
+
+                        <div class="section-figure section-figure--tall" style="max-width: 860px; margin-left: auto; margin-right: auto;">
+                            <img src="assets/figures/progression.png" alt="Progression of design choices from Transfusion baseline to final model">
+                        </div>
+                        <p class="section-caption">
+                            <strong>Cumulative impact of design choices.</strong> Starting from the Transfusion baseline, each improvement — modality-specific FFNs, RAE encoder (SigLIP), MoE, and x-prediction — progressively improves both text perplexity and image generation (DPG Score).
+                        </p>
+
+                        <div class="callout callout--blue">
+                            <p>
+                                <strong>Suggestion:</strong> Use MoE in unified models. It naturally learns modality specialization and provides efficient scaling, by growing capacity without increasing active compute.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="section-divider">
+
+            <!-- Section 5: Scaling (blue) -->
+            <section id="sec-scaling" class="sec-blue">
+                <div class="row">
+                    <div class="col-lg-11 mx-auto">
+                        <h2 class="section-title">Vision and Language Scale Differently</h2>
+
+                        <p class="body-text">
+                            Prior scaling studies focus on language models; few examine how vision and language scale jointly. We conduct IsoFLOP experiments — sweeping model sizes and token counts at fixed compute budgets — to derive scaling laws for both modalities within a single unified model. In dense models, we uncover a fundamental asymmetry: language scales similarly to Chinchilla (D<sub>opt</sub> &prop; C<sup>0.53</sup>), while vision is significantly more data-hungry (D<sub>opt</sub> &prop; C<sup>0.63</sup>). A single compute-optimal trend does not exist — scaling a unified model requires balancing these competing requirements.
+                        </p>
+
+                        <div class="section-figure">
+                            <img src="assets/figures/dense_scaling.png" alt="Scaling laws for unified dense models — vision is more data-hungry than language">
+                        </div>
+                        <p class="section-caption">
+                            <strong>Scaling laws for unified dense models.</strong> Vision requires more data relative to parameters (D<sub>opt</sub> &prop; C<sup>0.63</sup>) while language follows near-balanced Chinchilla scaling (D<sub>opt</sub> &prop; C<sup>0.53</sup>).
+                        </p>
+
+                        <p class="body-text">
+                            MoE architectures alleviate this asymmetry. The gap in scaling exponents shrinks from 0.10 (dense) to 0.05 (MoE), as language scaling shifts to become more data-hungry — effectively harmonizing with vision. At matched FLOPs, MoE allocates 45% fewer active parameters while training on 2–2.5&times; more tokens, leveraging 3–4&times; total capacity through inactive experts. The ability of sparse architectures to harmonize the scaling requirements of different modalities makes it well-suited for unified multimodal training.
+                        </p>
+
+                        <div class="section-figure">
+                            <img src="assets/figures/moe_scaling.png" alt="MoE narrows the vision-language scaling gap">
+                        </div>
+                        <p class="section-caption">
+                            <strong>MoE narrows the vision-language scaling gap.</strong> The exponent gap shrinks from 0.10 (dense) to 0.05 (MoE). MoE harmonizes the divergent scaling behaviors by making language more data-hungry to match vision.
+                        </p>
+
+                        <div class="callout callout--blue">
+                            <p>
+                                <strong>Takeaway:</strong> Vision and language follow asymmetric scaling laws within even the same model. MoE bridges this gap and harmonizes the asymmetry, providing an efficient and effective path to scale unified multimodal pretraining.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Invitation to the full paper -->
+            <p class="paper-invite">
+                This page highlights our key findings. The full paper contains substantially more experiments, analysis, and discussion — we invite interested readers to <a href="#">read the paper</a> for the complete picture.
+            </p>
+
+            <!-- Citation Section -->
+            <section id="citation" class="mt-2">
+                <div class="row">
+                    <div class="col-lg-11 mx-auto">
+                        <h2 class="section-title">Citation</h2>
+                        <div class="citation-block">
+                            <button class="copy-citation-btn" onclick="copyCitation(this)" title="Copy to clipboard">
+                                <i class="fas fa-copy"></i><span>Copy</span>
+                            </button>
+                            <pre><code>@article{tong2026beyond,
+  title={Beyond Language Modeling: An Exploration of Multimodal Pretraining},
+  author={Tong, Shengbang and Fan, David and Nguyen, John and Brown, Ellis and Zhou, Gaoyue and Qian, Shengyi and Zheng, Boyang and Vallaeys, Th{\'e}ophane and Han, Junlin and Fergus, Rob and Murray, Naila and Ghazvininejad, Marjan and Lewis, Mike and Ballas, Nicolas and Bar, Amir and Rabbat, Michael and Verbeek, Jakob and Zettlemoyer, Luke and Sinha, Koustuv and LeCun, Yann and Xie, Saining},
+  year={2026}
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div><!-- end sidebar-content-area -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <p>Questions? Contact David Fan and Shengbang (Peter) Tong.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+    (function() {
+        const sectionNav = document.getElementById('section-nav');
+        const navLinks = document.querySelectorAll('.section-nav-link');
+        const sections = [];
+
+        navLinks.forEach(link => {
+            const id = link.getAttribute('data-section');
+            const el = document.getElementById(id);
+            if (el) sections.push({ id, el, link });
+        });
+
+        function updateNavVisibility() {
+            const tldr = document.getElementById('tldr');
+            if (!tldr || !sectionNav) return;
+            const tldrBottom = tldr.offsetTop + tldr.offsetHeight;
+            sectionNav.classList.toggle('visible', window.scrollY > tldrBottom - 100);
+        }
+
+        function updateActiveSection() {
+            const scrollY = window.scrollY + 200;
+            let current = sections[0];
+            for (const section of sections) {
+                if (section.el.offsetTop <= scrollY) current = section;
+            }
+            navLinks.forEach(link => link.classList.remove('active'));
+            if (current) current.link.classList.add('active');
+        }
+
+        window.addEventListener('scroll', () => {
+            updateNavVisibility();
+            updateActiveSection();
+        });
+        updateNavVisibility();
+        updateActiveSection();
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const id = this.getAttribute('data-section');
+                const target = document.getElementById(id);
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+                sectionNav.classList.remove('menu-open');
+                const hamburger = document.getElementById('nav-hamburger');
+                if (hamburger) hamburger.classList.remove('open');
+            });
+        });
+
+        const hamburger = document.getElementById('nav-hamburger');
+        if (hamburger) {
+            hamburger.addEventListener('click', function() {
+                this.classList.toggle('open');
+                sectionNav.classList.toggle('menu-open');
+            });
+        }
+
+        // Touch-friendly tooltips
+        if ('ontouchstart' in window) {
+            document.querySelectorAll('.tldr-keyword').forEach(kw => {
+                kw.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const wasActive = this.classList.contains('tooltip-active');
+                    document.querySelectorAll('.tldr-keyword').forEach(k => k.classList.remove('tooltip-active'));
+                    if (!wasActive) this.classList.add('tooltip-active');
+                });
+            });
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.tldr-keyword')) {
+                    document.querySelectorAll('.tldr-keyword').forEach(k => k.classList.remove('tooltip-active'));
+                }
+            });
+        }
+    })();
+
+    function copyCitation(btn) {
+        const pre = btn.closest('.citation-block').querySelector('code');
+        const text = pre.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            const icon = btn.querySelector('i');
+            const label = btn.querySelector('span');
+            icon.className = 'fas fa-check';
+            label.textContent = 'Copied!';
+            btn.classList.add('copied');
+            setTimeout(() => {
+                icon.className = 'fas fa-copy';
+                label.textContent = 'Copy';
+                btn.classList.remove('copied');
+            }, 2000);
+        });
+    }
+    </script>
+</body>
+</html>
