@@ -119,7 +119,7 @@
                                 <span class="tldr-keyword" data-color="primary">can<span class="keyword-tooltip">Visual data is largely orthogonal to language, with minimal impact on text perplexity. Multimodal co-training shows positive transfer for VQA, image generation, and world modeling.</span></span> 
                                 unify multimodal pretraining with 
                                 <span class="tldr-keyword" data-color="secondary">RAE<span class="keyword-tooltip">Representation Autoencoders (e.g. SigLIP 2) excel at both visual understanding and generation with a single encoder, eliminating the need for dual representations.</span></span> and 
-                                <span class="tldr-keyword" data-color="accent">MoE<span class="keyword-tooltip">Mixture-of-Experts is well suited for multimodal pretraining — it naturally learns modality specialization and bridges the vision-language scaling asymmetry.</span></span>.
+                                <span class="tldr-keyword" data-color="accent">MoE<span class="keyword-tooltip">Mixture-of-Experts is well suited for multimodal pretraining: it naturally learns modality specialization and bridges the vision-language scaling asymmetry.</span></span>.
                             </p>
                         </div>
                     </div>
@@ -165,7 +165,7 @@
                         <h2 class="section-title">Unifying Understanding and Generation with RAE</h2>
 
                         <p class="body-text">
-                            Prior convention holds that visual understanding and generation require separate encoders — typically a semantic encoder (e.g. SigLIP 2) for understanding and a VAE for generation. This duality complicates model design and adds overhead to both training and inference. Recent work on Representation Autoencoders (RAE), however, shows that diffusion can operate effectively in high-dimensional semantic latent spaces, suggesting that a single encoder may suffice for both tasks.
+                            Prior convention holds that visual understanding and generation require separate encoders: typically a semantic encoder (e.g. SigLIP 2) for understanding and a VAE for generation. This duality complicates model design and adds overhead to both training and inference. Recent work on Representation Autoencoders (RAE), however, shows that diffusion can operate effectively in high-dimensional semantic latent spaces, suggesting that a single encoder may suffice for both tasks.
                         </p>
 
                         <p class="body-text">
@@ -181,7 +181,7 @@
 
                         <div class="callout callout--gold">
                             <p>
-                                <strong>Suggestion:</strong> Adopt a single RAE-based encoder (e.g. SigLIP 2 or WebSSL). It simplifies the architecture and achieves both strong visual understanding and generation, while preserving text performance.
+                                <strong>Suggestion 1:</strong> Adopt a single RAE-based encoder (e.g. SigLIP 2 or WebSSL). RAE simplifies the architecture and achieves both strong visual understanding and generation, while preserving text performance.
                             </p>
                         </div>
                     </div>
@@ -226,7 +226,7 @@
 
                         <div class="callout callout--teal">
                             <p>
-                                <strong>Suggestion:</strong> Train with multimodal data (e.g. raw video, image-text). Visual data minimally interferes with language modeling, while unlocking positive synergy for downstream capabilities.
+                                <strong>Suggestion 2:</strong> Train with multimodal data (e.g. raw video, image-text). Visual data minimally interferes with language modeling, while unlocking positive synergy for downstream capabilities.
                             </p>
                         </div>
                     </div>
@@ -242,11 +242,11 @@
                         <h2 class="section-title">World Modeling Emerges from General Pretraining</h2>
 
                         <p class="body-text">
-                            Given that vision and language are complementary, we explore whether unified multimodal models can learn world modeling — without any architectural changes. We adopt the <a href="https://www.amirbar.net/nwm/" target="_blank">Navigation World Model</a> (NWM) setting, where the task is to predict the next visual state given context frames and a navigation action. Unlike prior work which uses specialized action encoders, we represent actions directly as <i>text tokens</i>, framing the task as video + text &rarr; image prediction within our standard model.
+                            Given that vision and language are complementary, we explore whether unified multimodal models can learn world modeling, <i>without any architectural changes</i>. We adopt the <a href="https://www.amirbar.net/nwm/" target="_blank">Navigation World Model</a> (NWM) setting, where the task is to predict the next visual state given context frames and a navigation action. Unlike prior work which uses specialized action encoders, we represent actions directly as <i>text tokens</i>, framing the task as video + text &rarr; image prediction within our standard model.
                         </p>
 
                         <p class="body-text">
-                            We find that world modeling capabilities emerge primarily from general multimodal pretraining rather than domain-specific data. Adding unsupervised video data yields the largest gain — outperforming scaling in-domain NWM data alone. More strikingly, when we vary the ratio of domain-specific data while keeping total training data fixed, performance saturates at just 1% in-domain data. This suggests that the core capability is acquired from general pretraining, and in-domain data just helps the model to learn the specific task format. This also implies that to build better world models, we do not necessarily have to collect large-scale action-conditioned data — we can also leverage the abundance of general data available.
+                            We find that world modeling capabilities emerge primarily from general multimodal pretraining rather than domain-specific data. Adding unsupervised video data yields the largest gain, outperforming scaling in-domain NWM data alone. More strikingly, when we vary the ratio of domain-specific data while keeping total training data fixed, performance saturates at just 1% in-domain data. This suggests that the core capability is acquired from general pretraining, and in-domain data just helps the model to learn the specific task format. This also implies that to build better world models, we do not necessarily have to collect large-scale action-conditioned data — we can also leverage the abundance of general data available.
                         </p>
 
                         <div class="section-figure section-figure--framed">
@@ -256,7 +256,7 @@
                             <strong>World modeling transfers with minimal alignment.</strong> Performance saturates at just 1% in-domain data, suggesting that the core capability is acquired from general multimodal pretraining.
                         </p>
                         
-                        <p class="body-text">We show some qualitative samples of navigation with free-form language and WASD-style navigation actions. Native multimodal pretraining enables the model to generalize out-of-distribution, and allows the use of a nearly unlimited set of actions, via natural language, unlike recent works such as Genie 3 which can only utilize a limited set of pretrained actions. Note that we do not make any architectural changes to enable world modeling — we simply pass in actions as text tokens. See the paper for more qualitative examples.</p>
+                        <p class="body-text">We show some qualitative samples of navigation with free-form language and WASD-style navigation actions. Native multimodal pretraining enables the model to generalize out-of-distribution, and allows the use of a nearly unlimited set of actions via natural language, unlike recent works such as Genie 3 which can only utilize a limited set of pretrained actions. See the paper for more qualitative examples.</p>
                         <div class="section-figure section-figure--tall">
                             <img src="assets/figures/nwm_example_1.jpg" alt="Controllable future prediction with free-form language and WASD navigation actions" loading="lazy">
                         </div>
@@ -273,7 +273,7 @@
 
                         <div class="callout callout--teal">
                             <p>
-                                <strong>Takeaway:</strong> World modeling capabilities emerge from broad multimodal pretraining — general video data outperforms specialized domain scaling, and as little as 1% in-domain data suffices for unlocking new capabilities.
+                                <strong>Suggestion 3:</strong> Unlock world modeling capabilities via broad multimodal pretraining, without any architectural changes. Leveraging general video data outperforms specialized in-domain scaling, and as little as 1% in-domain data suffices for "grokking" new capabilities.
                             </p>
                         </div>
                     </div>
@@ -289,11 +289,56 @@
                         <h2 class="section-title">Unified Multimodal Architecture Design</h2>
 
                         <p class="body-text">
-                            Given the Transfusion framework, two key design questions remain: <em>1) What visual representation should the model use?</em> and <em>2) How should parameters be allocated across modalities?</em> We walk through these below — each step is validated by controlled experiments. 
+                            Modality-specific FFNs improve multimodal learning by giving each modality dedicated parameters, but this separation is hand-designed and splits capacity evenly. Mixture-of-Experts (MoE) offers a natural alternative by learning a dynamic, data-driven decomposition. While MoE has proven effective for language models, its design space for native multimodal pretraining remains largely unexplored.
+                        </p>
+
+                        <!-- MoE Deep Dive -->
+                        <h3 class="subsection-title">Developing MoE for Multimodal Models</h3>
+
+                        <p class="body-text">
+                            We study the MoE design space across expert granularity, sparsity, and shared expert strategies. Fine-grained experts are critical (G=16 saturates performance), and per-modality shared experts outperform global ones. Most remarkably, modality specialization emerges naturally: the majority of experts specialize in text, but vision and multimodal experts increase in later layers. Vision experts are also general-purpose; the same experts handle both understanding and generation with high correlation (r > 0.9) across all layers.
+                        </p>
+
+                        <div class="section-figure section-figure--framed">
+                            <img src="assets/figures/moe_specialization.png" alt="Emergent modality specialization in MoE routing" loading="lazy">
+                        </div>
+                        <p class="section-caption">
+                            <strong>Modality specialization emerges naturally.</strong> Most experts are text-focused, but the proportion of vision and multimodal experts increases with network depth, without any explicit modality routing constraints.
+                        </p>
+
+                        <p class="body-text">
+                            Sparse scaling is highly effective: increasing total experts from 32 to 1008 at fixed active compute consistently improves both language and vision. Since active parameters remain constant, MoE provides an efficient scaling strategy, growing capacity without increasing training or inference costs. Notably, RAE-based models successfully leverage the added capacity to improve both diffusion and text loss, while VAE-based models stagnate at higher expert counts for diffusion loss.
+                        </p>
+
+                        <div class="section-figure section-figure--wide section-figure--framed">
+                            <img src="assets/figures/moe_sparsity_perf.png" alt="Sparsity scales multimodal performance" loading="lazy">
+                        </div>
+                        <p class="section-caption">
+                            <strong>Sparsity scales multimodal performance.</strong> At fixed active compute (16 experts), increasing total expert count from 32 to 1008 consistently improves both language (lower PPL) and vision (lower diffusion loss, higher GenEval).
+                        </p>
+
+                        <div class="section-figure section-figure--wide section-figure--framed">
+                            <img src="assets/figures/moe_sparsity_loss.png" alt="Training loss scaling in multimodal MoE pretraining" loading="lazy">
+                        </div>
+                        <p class="section-caption">
+                            <strong>RAE scales with sparsity; VAE stagnates.</strong> Text loss improves consistently regardless of encoder. Diffusion loss continues scaling for RAE (SigLIP) but stagnates for VAE (FLUX) at higher expert counts.
+                        </p>
+
+                        <div class="callout callout--blue">
+                            <p>
+                                <strong>Suggestion 4:</strong> Use MoE in multimodal models. MoE naturally learns modality specialization from the data and provides efficient scaling, by growing capacity without increasing active compute.
+                            </p>
+                        </div>
+
+                        <!-- Summary: Stacking Design Choices -->
+                        <h3 class="subsection-title" style="margin-top: 44px;">Stacking the Design Choices</h3>
+
+                        <p class="body-text">
+                            Each design axis above was studied in isolation. We now verify that these choices are complementary by stacking them progressively, starting from the Transfusion baseline and adding one improvement at a time.
                         </p>
 
                         <!-- Toggle Card 1: FFN Variants -->
-                        <details class="arch-card" open>
+                        <details class="arch-card">
                             <summary class="arch-card__header">
                                 <span class="arch-card__step">Step 1</span>
                                 <span class="arch-card__title">FFN Variants: Shared vs. Modality-Specific</span>
@@ -301,7 +346,7 @@
                             </summary>
                             <div class="arch-card__body">
                                 <p class="body-text">
-                                    The Transfusion baseline shares all FFN parameters across text and vision. A simple first improvement is to give each modality its own FFN — "modality-specific FFNs." We find that modality-specific FFNs improve performance across the board.
+                                    The Transfusion baseline shares all FFN parameters across text and vision. A simple first improvement is to give each modality its own FFN ("modality-specific FFNs"). We find that modality-specific FFNs improve performance across the board.
                                 </p>
 
                                 <div class="section-figure section-figure--framed">
@@ -364,43 +409,8 @@
                             </div>
                         </details>
 
-                        <!-- MoE Deep Dive (restored from master) -->
-                        <h3 class="subsection-title">Developing MoE for Multimodal Models</h3>
-
                         <p class="body-text">
-                            Modality-specific FFNs improve multimodal pretraining by giving each modality its own parameters. We take this principle further with Mixture-of-Experts, which learns a dynamic, data-driven decomposition of the FFN layers, rather than relying on hand-designed separation. We study expert granularity, sparsity, and design choices. Fine-grained experts are critical (G=16 saturates performance), and per-modality shared experts outperform global ones. Most remarkably, modality specialization emerges naturally: the majority of experts specialize in text, but vision and multimodal experts increase in later layers. Vision experts are general-purpose — the same experts handle both understanding and generation with high correlation (r > 0.9) across all layers.
-                        </p>
-
-                        <div class="section-figure section-figure--framed">
-                            <img src="assets/figures/moe_specialization.png" alt="Emergent modality specialization in MoE routing" loading="lazy">
-                        </div>
-                        <p class="section-caption">
-                            <strong>Modality specialization emerges naturally.</strong> Most experts are text-focused, but the proportion of vision and multimodal experts increases with network depth — without any explicit modality routing constraints.
-                        </p>
-
-                        <p class="body-text">
-                            Sparse scaling is highly effective: increasing total experts from 32 to 1008 at fixed active compute consistently improves both language and vision. Since active parameters remain constant, MoE provides an efficient scaling strategy — capacity grows without increasing training or inference costs. Notably, RAE-based models successfully leverage the added capacity to improve both diffusion and text loss, while VAE-based models stagnate at higher expert counts for diffusion loss.
-                        </p>
-
-                        <div class="section-figure section-figure--wide section-figure--framed">
-                            <img src="assets/figures/moe_sparsity_perf.png" alt="Sparsity scales multimodal performance" loading="lazy">
-                        </div>
-                        <p class="section-caption">
-                            <strong>Sparsity scales multimodal performance.</strong> At fixed active compute (16 experts), increasing total expert count from 32 to 1008 consistently improves both language (lower PPL) and vision (lower diffusion loss, higher GenEval).
-                        </p>
-
-                        <div class="section-figure section-figure--wide section-figure--framed">
-                            <img src="assets/figures/moe_sparsity_loss.png" alt="Training loss scaling in multimodal MoE pretraining" loading="lazy">
-                        </div>
-                        <p class="section-caption">
-                            <strong>RAE scales with sparsity; VAE stagnates.</strong> Text loss improves consistently regardless of encoder. Diffusion loss continues scaling for RAE (SigLIP) but stagnates for VAE (FLUX) at higher expert counts.
-                        </p>
-
-                        <!-- Summary: Putting It All Together -->
-                        <h3 class="subsection-title" style="margin-top: 44px;">Putting It All Together</h3>
-
-                        <p class="body-text">
-                            Combining the best choices thus far — RAE encoder (SigLIP), MoE parameter separation, and x-prediction — yields cumulative gains at every step. Starting from the Transfusion baseline, each improvement progressively improves both text perplexity and image generation quality, validating our design conclusions from this controlled empirical study.
+                            Combining all four improvements yields cumulative gains at every step. With our unified design validated, we next ask: how do vision and language scale within this model?
                         </p>
 
                         <div class="section-figure section-figure--tall section-figure--framed" style="max-width: 860px; margin-left: auto; margin-right: auto;">
@@ -409,12 +419,6 @@
                         <p class="section-caption">
                             <strong>Cumulative impact of design choices.</strong> Starting from the Transfusion baseline, each improvement — modality-specific FFNs, RAE encoder (SigLIP), MoE, and x-prediction — progressively improves both text perplexity and image generation (DPG Score).
                         </p>
-
-                        <div class="callout callout--blue">
-                            <p>
-                                <strong>Suggestion:</strong> Use MoE in unified models. It naturally learns modality specialization and provides efficient scaling, by growing capacity without increasing active compute.
-                            </p>
-                        </div>
                     </div>
                 </div>
             </section>
@@ -428,7 +432,7 @@
                         <h2 class="section-title">Vision and Language Scale Differently</h2>
 
                         <p class="body-text">
-                            Prior scaling studies focus on language models; few examine how vision and language scale jointly. We conduct IsoFLOP experiments — sweeping model sizes and token counts at fixed compute budgets — to derive scaling laws for both modalities within a single unified model. In dense models, we uncover a fundamental asymmetry: language scales similarly to Chinchilla (D<sub>opt</sub> &prop; C<sup>0.53</sup>), while vision is significantly more data-hungry (D<sub>opt</sub> &prop; C<sup>0.63</sup>). A single compute-optimal trend does not exist — scaling a unified model requires balancing these competing requirements.
+                            Prior scaling studies focus on language models; few examine how vision and language scale jointly. We conduct IsoFLOP experiments — sweeping model sizes and token counts at fixed compute budgets — to derive scaling laws for both modalities within a single unified model. In dense models, we uncover a fundamental asymmetry: language scales similarly to Chinchilla (D<sub>opt</sub> &prop; C<sup>0.53</sup>), while vision is significantly more data-hungry (D<sub>opt</sub> &prop; C<sup>0.63</sup>). A single compute-optimal trend does not exist, yet scaling a unified model requires balancing these competing requirements.
                         </p>
 
                         <div class="section-figure section-figure--wide section-figure--framed">
@@ -439,7 +443,7 @@
                         </p>
 
                         <p class="body-text">
-                            MoE architectures alleviate this asymmetry. The gap in scaling exponents shrinks from 0.10 (dense) to 0.05 (MoE), as language scaling shifts to become more data-hungry — effectively harmonizing with vision. At matched FLOPs, MoE allocates 45% fewer active parameters while training on 2–2.5&times; more tokens, leveraging 3–4&times; total capacity through inactive experts. The ability of sparse architectures to harmonize the scaling requirements of different modalities makes it well-suited for unified multimodal training.
+                            Luckily, MoE architectures alleviate this asymmetry. The gap in scaling exponents shrinks from 0.10 (dense) to 0.05 (MoE), as language scaling shifts to become more data-hungry, effectively harmonizing with vision. At matched FLOPs, MoE allocates 45% fewer active parameters while training on 2–2.5&times; more tokens, leveraging 3–4&times; total capacity through inactive experts. The ability of sparse architectures to harmonize the scaling requirements of different modalities makes it well-suited for unified multimodal training.
                         </p>
 
                         <div class="section-figure section-figure--wide section-figure--framed">
